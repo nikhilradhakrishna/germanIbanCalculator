@@ -37,8 +37,8 @@ public final class IBANCalculator {
      * getIBAN("ABC")         → null
      * getIBAN(null)          → null
      */
-    public static String getIBAN(String accountNumber) {
-        return calculator.calculate(accountNumber);
+    public static String getIBAN(String bankCode, String accountNumber) {
+        return calculator.calculate(bankCode, accountNumber);
     }
 
     /**
