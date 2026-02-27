@@ -12,7 +12,7 @@ public class IBANCalculatorService {
         this.validatorService = validatorService;
     }
 
-    public String calculate(String accountNumber) {
+   /* public String calculate(String bankCode, String accountNumber) {
         try {
             var cleaned = accountNumber == null
                     ? ""
@@ -26,7 +26,7 @@ public class IBANCalculatorService {
             var paddedAccount = "%010d".formatted(Long.parseLong(cleaned));
 
             // Build BBAN = BankCode(8) + Account(10)
-            var bban = IBANConstants.BANK_CODE + paddedAccount;
+            var bban = bankCode + paddedAccount;
 
             // Compute check digits
             var numericString = NumericConverter.convert(bban + IBANConstants.COUNTRY_CODE + "00");
@@ -43,5 +43,32 @@ public class IBANCalculatorService {
         } catch (Exception e) {
             return null;
         }
-    }
+    }*/
+   public String calculate(String bankCode, String accountNumber) {
+       if (bankCode == null) throw new IllegalArgumentException("Bank code must not be null");
+       if (accountNumber == null) throw new IllegalArgumentException("Account number must not be null");
+       if (!bankCode.matches("\\d{8}")) throw new IllegalArgumentException("Bank code must be exactly 8 digits");
+       if (accountNumber.trim().replaceAll("\\s+", "").length() > IBANConstants.ACCOUNT_LENGTH)
+           throw new IllegalArgumentException("Account number must not exceed 10 digits");
+       try {
+           var cleaned = accountNumber.trim().replaceAll("\\s+", ""); // null check no longer needed here
+
+           if (cleaned.isBlank()) return null;
+           if (!cleaned.matches("\\d+")) return null;
+           if (cleaned.length() > IBANConstants.ACCOUNT_LENGTH) return null;
+
+           var paddedAccount = "%010d".formatted(Long.parseLong(cleaned));
+           var bban = bankCode + paddedAccount;
+           var numericString = NumericConverter.convert(bban + IBANConstants.COUNTRY_CODE + "00");
+           var checkDigits = "%02d".formatted(98 - NumericConverter.mod97(numericString));
+           var ibanRaw = IBANConstants.COUNTRY_CODE + checkDigits + bban;
+
+           if (!validatorService.validate(ibanRaw)) return null;
+
+           return ibanRaw;
+
+       } catch (Exception e) {
+           return null;
+       }
+   }
 }
