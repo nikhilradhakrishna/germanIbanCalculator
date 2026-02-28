@@ -7,7 +7,6 @@ A Java utility for calculating and generating valid German IBANs (International 
 ## 📋 Table of Contents
 
 - [Overview](#overview)
-- [How German IBANs Work](#how-german-ibans-work)
 - [Project Structure](#project-structure)
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
